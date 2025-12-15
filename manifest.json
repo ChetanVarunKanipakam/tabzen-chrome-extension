@@ -1,0 +1,32 @@
+{
+  "name": "TabZen: Mindful Tab Management",
+  "version": "1.0.0",
+  "description": "Organize tabs, track usage, and receive mindfulness reminders.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "tabGroups", 
+    "alarms"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/ext-icon.png",
+      "24": "assets/ext-icon.png",
+      "32": "assets/ext-icon.png"
+    },
+    "default_title": "TabZen",
+    "default_popup": "popup.html"
+  },
+  "manifest_version": 3
+}
