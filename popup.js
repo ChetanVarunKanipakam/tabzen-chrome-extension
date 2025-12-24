@@ -1,44 +1,69 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const groupBtn = document.getElementById("groupBtn");
+  const ungroupBtn = document.getElementById("ungroupBtn");
+  const dedupBtn = document.getElementById("dedupBtn");
   const focusBtn = document.getElementById("focusBtn");
   const stopBtn = document.getElementById("stopBtn");
+  
   const tabCountSpan = document.getElementById("tabCount");
+  const sessionCountSpan = document.getElementById("sessionCount");
+  const statusBadge = document.getElementById("statusBadge");
 
-  // 1. Get current tab count for Analytics
-  const tabs = await chrome.tabs.query({ currentWindow: true });
-  tabCountSpan.textContent = tabs.length;
+  // --- Helper: Update Stats UI ---
+  const updateUI = async () => {
+    // Tab Count
+    const tabs = await chrome.tabs.query({ currentWindow: true });
+    tabCountSpan.textContent = tabs.length;
 
-  // 2. Check Storage for Focus Mode State (to keep button state consistent)
-  chrome.storage.sync.get(["isFocusMode"], (result) => {
-    if (result.isFocusMode) {
-      focusBtn.style.display = "none";
-      stopBtn.style.display = "block";
-    }
-  });
+    // Focus State
+    chrome.storage.sync.get(["isFocusMode", "sessionsCompleted"], (res) => {
+      // Toggle Buttons
+      if (res.isFocusMode) {
+        focusBtn.style.display = "none";
+        stopBtn.style.display = "block";
+        statusBadge.textContent = "ON";
+        statusBadge.className = "badge active";
+      } else {
+        focusBtn.style.display = "block";
+        stopBtn.style.display = "none";
+        statusBadge.textContent = "OFF";
+        statusBadge.className = "badge inactive";
+      }
 
-  // 3. Handle Group Tabs Click
+      // Mindfulness Stats
+      sessionCountSpan.textContent = res.sessionsCompleted || 0;
+    });
+  };
+
+  // Initial Load
+  updateUI();
+
+  // --- Event Listeners ---
+
   groupBtn.addEventListener("click", () => {
-    chrome.runtime.sendMessage({ action: "GROUP_TABS" });
-    // Update tab count display
-    setTimeout(async () => {
-      const t = await chrome.tabs.query({ currentWindow: true });
-      tabCountSpan.textContent = t.length;
-    }, 500);
+    chrome.runtime.sendMessage({ action: "GROUP_TABS" }, () => setTimeout(updateUI, 200));
   });
 
-  // 4. Handle Start Focus
+  ungroupBtn.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "UNGROUP_TABS" }, () => setTimeout(updateUI, 200));
+  });
+
+  dedupBtn.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ action: "CLOSE_DUPLICATES" }, (response) => {
+      // Optional: Show a small toast notification or update text
+      setTimeout(updateUI, 200);
+    });
+  });
+
   focusBtn.addEventListener("click", () => {
     chrome.runtime.sendMessage({ action: "START_FOCUS" });
     chrome.storage.sync.set({ isFocusMode: true });
-    focusBtn.style.display = "none";
-    stopBtn.style.display = "block";
+    updateUI();
   });
 
-  // 5. Handle Stop Focus
   stopBtn.addEventListener("click", () => {
     chrome.runtime.sendMessage({ action: "STOP_FOCUS" });
     chrome.storage.sync.set({ isFocusMode: false });
-    focusBtn.style.display = "block";
-    stopBtn.style.display = "none";
+    updateUI();
   });
 });

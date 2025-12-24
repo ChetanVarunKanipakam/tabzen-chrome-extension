@@ -1,21 +1,66 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+      body { width: 300px; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; background: #f4f4f9; color: #333; }
+      h1 { font-size: 18px; margin: 0 0 5px 0; display: flex; justify-content: space-between; align-items: center; }
+      p.subtitle { margin: 0 0 15px 0; font-size: 12px; color: #666; }
+      
+      /* Stats Area */
+      .stats-box { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-around; margin-bottom: 15px; }
+      .stat-item { text-align: center; }
+      .stat-val { font-weight: bold; font-size: 16px; color: #6c5ce7; }
+      .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
+
+      /* Buttons */
+      button { width: 100%; border: none; padding: 10px; margin-bottom: 8px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
+      button:hover { opacity: 0.9; transform: translateY(-1px); }
+      
+      .btn-primary { background: #6c5ce7; color: white; }
+      .btn-secondary { background: #dfe6e9; color: #2d3436; }
+      .btn-focus { background: #00cec9; color: white; }
+      .btn-stop { background: #ff7675; color: white; display: none; }
+      
+      /* Badge */
+      .badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+      .badge.active { background: #00cec9; color: white; }
+      .badge.inactive { background: #b2bec3; color: white; }
+      
+      /* Grid for small actions */
+      .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <h1>TabZen 🧘</h1>
-      <p>Mindful Management</p>
-      
-      <button id="groupBtn" class="btn-group">📂 Auto-Group Tabs</button>
-      <button id="focusBtn" class="btn-focus">🎯 Start Focus Mode</button>
-      <button id="stopBtn" class="btn-stop">🛑 Stop Focus Mode</button>
+    <h1>
+      TabZen 
+      <span id="statusBadge" class="badge inactive">OFF</span>
+    </h1>
+    <p class="subtitle">Mindful Management</p>
 
-      <div class="stats">
-        <p>Active Tabs: <span id="tabCount">0</span></p>
+    <div class="stats-box">
+      <div class="stat-item">
+        <div class="stat-val" id="tabCount">0</div>
+        <div class="stat-label">Tabs</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" id="sessionCount">0</div>
+        <div class="stat-label">Zen Moments</div>
       </div>
     </div>
+    
+    <!-- Management Section -->
+    <button id="groupBtn" class="btn-primary"> Group by Domain</button>
+    
+    <div class="action-grid">
+      <button id="ungroupBtn" class="btn-secondary">Ungroup</button>
+      <button id="dedupBtn" class="btn-secondary"> Cleanup</button>
+    </div>
+
+    <!-- Focus Section -->
+    <hr style="border: 0; border-top: 1px solid #ddd; margin: 10px 0;">
+    <button id="focusBtn" class="btn-focus"> Start Focus (30m)</button>
+    <button id="stopBtn" class="btn-stop">Stop Focus Mode</button>
+
     <script src="popup.js"></script>
   </body>
 </html>
